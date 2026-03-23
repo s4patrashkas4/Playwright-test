@@ -59,7 +59,20 @@ const elements: Elements[] = [
     name: 'Search icon',
     locator: (page: Page): Locator => page.getByRole('button', { name: 'Search (Ctrl+K)' })
   },
-  
+  {
+    name: 'Playwright enables reliable',
+    locator: (page: Page): Locator => page.getByRole('heading', { name: 'Playwright enables reliable' }),
+    text: 'Playwright enables reliable end-to-end testing for modern web apps.',
+  },
+  {
+    name: 'Check Get Started Btn',
+    locator: (page: Page):Locator => page.getByRole('link', { name: 'Get started' }),
+    text: 'Get started',
+    attribute: {
+      type: 'href',
+      value: '/docs/intro',
+    }
+  }
 ];
 
 
@@ -101,17 +114,6 @@ test.describe('Tests main paig', () => {
     await expect.soft(page.locator('html')).toHaveAttribute('data-theme', 'light')
     await page.getByLabel('Switch between dark and light').click();
     await expect.soft(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  });
-
-  test('Check heading text', async ({ page }) => {
-    await expect.soft(page.getByRole('heading', { name: 'Playwright enables reliable' })).toBeVisible();
-    await expect.soft(page.getByRole('heading', { name: 'Playwright enables reliable' })).toContainText('Playwright enables reliable end-to-end testing for modern web apps.');
-  });
-
-  test('Check Get Started Btn', async ({ page }) => {
-    await expect.soft(page.getByRole('link', { name: 'Get started' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'Get started' })).toContainText('Get started');
-    await expect.soft(page.getByRole('link', { name: 'Get started' })).toHaveAttribute('href', '/docs/intro');
   });
 })
 
