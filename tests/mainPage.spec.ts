@@ -1,34 +1,99 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator, Page } from '@playwright/test';
+
+interface Elements {
+  locator: (page: Page) => Locator;
+  name: string;
+  text?: string;
+  attribute?: {
+    type: string;
+    value: string;
+  }
+}
+
+const elements: Elements[] = [
+  {
+    name: 'Playwrite Logo link',
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Playwright logo Playwright' }),
+    text: 'Playwright',
+    attribute: {
+      type: 'href',
+      value: '/',
+    }
+  },
+  {
+    name: 'API link',
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'API' }),
+    text: 'API',
+    attribute: {
+      type: 'href',
+      value: '/docs/api/class-playwright',
+    }
+  },
+  {
+    name: 'Node.js link',
+    locator: (page: Page): Locator => page.getByRole('button', { name: 'Node.js' }),
+    text: 'Node.js',
+  },
+  {
+    name: 'Community link',
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Community' }),
+    text: 'Community',
+    attribute: {
+      type: 'href',
+      value: '/community/welcome',
+    }
+  },
+  {
+    name: 'GitHub link',
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'GitHub repository' })
+  },
+  {
+    name: 'Discord icon',
+    locator: (page: Page): Locator => page.getByRole('link', { name: 'Discord server' })
+  },
+  {
+    name: 'LightMode icon',
+    locator: (page: Page): Locator => page.getByRole('button', { name: 'Switch between dark and light' })
+  },
+  {
+    name: 'Search icon',
+    locator: (page: Page): Locator => page.getByRole('button', { name: 'Search (Ctrl+K)' })
+  },
+  
+];
+
 
 test.describe('Tests main paig', () => {
   test.beforeEach(async ({ page })=> {
     await page.goto('https://playwright.dev/');
-  })
+  });
+
   test('Check navigation elements view', async ({ page }) => {
-    await expect.soft(page.getByRole('link', { name: 'Playwright logo Playwright' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'Docs' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'API' })).toBeVisible();
-    await expect.soft(page.getByRole('button', { name: 'Node.js' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'Community' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'GitHub repository' })).toBeVisible();
-    await expect.soft(page.getByRole('link', { name: 'Discord server' })).toBeVisible();
-    await expect.soft(page.getByRole('button', { name: 'Switch between dark and light' })).toBeVisible();
-    await expect.soft(page.getByRole('button', { name: 'Search (Ctrl+K)' })).toBeVisible();
+    elements.forEach(({ name, locator }) => {
+      test.step(`Check Visible ${name}`, async () => {
+        await expect.soft(locator(page)).toBeVisible();
+      })
+    })
   });
 
   test('Check name navigation elements', async ({ page }) => {
-    await expect.soft(page.getByRole('link', { name: 'Playwright logo Playwright' })).toContainText('Playwright');
-    await expect.soft(page.getByRole('link', { name: 'Docs' })).toContainText('Docs');
-    await expect.soft(page.getByRole('link', { name: 'API' })).toContainText('API');
-    await expect.soft(page.getByRole('button', { name: 'Node.js' })).toContainText('Node.js');
-    await expect.soft(page.getByRole('link', { name: 'Community' })).toContainText('Community');
+    elements.forEach(({name, locator, text}) => {
+      if (text) {
+        test.step(`Check element name ${name}`, async () => {
+          await expect.soft(locator(page)).toContainText(text)
+        })
+      }
+    })
   });
 
-  test('Check href navigation elements ', async ({ page }) => {
-    await expect.soft(page.getByRole('link', { name: 'Playwright logo Playwright' })).toHaveAttribute('href', '/');
-    await expect.soft(page.getByRole('link', { name: 'Docs' })).toHaveAttribute('href', '/docs/intro');
-    await expect.soft(page.getByRole('link', { name: 'API' })).toHaveAttribute('href', '/docs/api/class-playwright');
-    await expect.soft(page.getByRole('link', { name: 'Community' })).toHaveAttribute('href', '/community/welcome');
+  test('Check elements href navigation', async ({ page }) => {
+    elements.forEach(({name, locator, attribute, }) => {
+      if (attribute) {
+        test.step(`Check element href attribute ${name}`, async () => {
+          await expect.soft(locator(page)).toHaveAttribute(attribute.type, attribute.value)
+        })
+      }
+    })
   });
 
   test('Check theme select', async ({ page }) => {
