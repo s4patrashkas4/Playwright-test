@@ -75,6 +75,7 @@ const elements: Elements[] = [
   }
 ];
 
+const themeMods = ['light', 'dark']
 
 test.describe('Tests main paig', () => {
   test.beforeEach(async ({ page })=> {
@@ -115,5 +116,14 @@ test.describe('Tests main paig', () => {
     await page.getByLabel('Switch between dark and light').click();
     await expect.soft(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   });
+
+  themeMods.forEach((value) => {
+    test(`Check style active ${value} mod`, async ({ page }) => {
+      await page.evaluate((value) => {
+        document.querySelector('html')?.setAttribute('data-theme', value);
+      }, value);
+      await expect(page).toHaveScreenshot(`pageWith${value}Mode.png`);
+    })
+  })
 })
 
